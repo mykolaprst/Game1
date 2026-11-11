@@ -100,10 +100,21 @@
   }
   #startBtn:active { transform: scale(0.96); }
   .mini { padding: 6px 0; font-size: 11px; letter-spacing: 0.18em; font-weight: 700; width: 100%; }
-  #touch { display: none; width: 100%; max-width: 460px; gap: 6px; grid-template-columns: repeat(6, 1fr); }
-  #touch button { height: 54px; font-size: 20px; font-weight: 800; }
-  #touch button:active { background: rgba(255, 47, 185, 0.4); }
-  #touch .wide { font-size: 11px; letter-spacing: 0.14em; }
+  #touch {
+    display: none; width: 100%; max-width: 560px; height: 132px; gap: 8px;
+    grid-template-columns: 1fr 1.25fr 1fr;
+  }
+  #touch button {
+    font-size: 30px; font-weight: 900; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(18, 10, 40, 0.78); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px; line-height: 1;
+  }
+  #touch button small { font-size: 9px; letter-spacing: 0.22em; color: var(--dim); font-weight: 700; }
+  #touch button.down { background: rgba(255, 47, 185, 0.45); border-color: var(--pink); transform: scale(0.96); }
+  #touch .move { font-size: 40px; border-color: rgba(39, 232, 255, 0.5); box-shadow: inset 0 0 18px rgba(39, 232, 255, 0.15); }
+  #touch .mid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; }
+  #touch .mid button { font-size: 22px; }
+  #touch .slam { border-color: rgba(255, 201, 60, 0.7); color: var(--gold); }
   @media (pointer: coarse) { #touch { display: grid; } }
 </style>
 </head>
@@ -113,7 +124,7 @@
   <div id="logo">Chrome Groove</div>
   <div id="stage">
     <div class="side">
-      <div class="box"><h3>Hold</h3><canvas id="holdCv"></canvas></div>
+      <div class="box" id="holdBox"><h3>Hold</h3><canvas id="holdCv"></canvas></div>
       <div class="box"><h3>Score</h3><div class="val" id="score">0</div></div>
       <div class="box"><h3>Best</h3><div class="val" id="best">0</div></div>
       <button class="mini" id="pauseBtn">PAUSE</button>
@@ -142,12 +153,14 @@
     </div>
   </div>
   <div id="touch">
-    <button data-a="left">&#9664;</button>
-    <button data-a="right">&#9654;</button>
-    <button data-a="down">&#9660;</button>
-    <button data-a="rotate">&#10227;</button>
-    <button data-a="drop" class="wide">SLAM</button>
-    <button data-a="hold" class="wide">HOLD</button>
+    <button data-a="left" class="move" aria-label="Move left">&#9664;</button>
+    <div class="mid">
+      <button data-a="rotate" aria-label="Rotate">&#10227;<small>ROTATE</small></button>
+      <button data-a="hold" aria-label="Hold">&#8646;<small>HOLD</small></button>
+      <button data-a="down" aria-label="Soft drop">&#9660;<small>DOWN</small></button>
+      <button data-a="drop" class="slam" aria-label="Slam">&#10515;<small>SLAM</small></button>
+    </div>
+    <button data-a="right" class="move" aria-label="Move right">&#9654;</button>
   </div>
 </div>
 
@@ -158,6 +171,7 @@
 // ---------- Config ----------
 const COLS = 10, ROWS = 20;
 const METER_MAX = 8;
+const LINES_PER_LEVEL = 4;
 const OVERDRIVE_BEATS = 32;
 const BEAT_WINDOW = 0.11; // seconds either side of the kick
 
@@ -184,7 +198,7 @@ let cell = 28, dpr = 1;
 function layout() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   const coarse = matchMedia('(pointer: coarse)').matches;
-  const availH = innerHeight - 16 - 44 - (coarse ? 70 : 0) - 16;
+  const availH = innerHeight - 16 - 44 - (coarse ? 142 : 0) - 16;
   let c = Math.floor(availH / ROWS);
   // side panels are 3.4 cells each (min 66px)
   while (c > 10 && c * COLS + 6 + 2 * Math.max(66, c * 3.4) + 16 + 16 > innerWidth) c--;
@@ -491,7 +505,7 @@ function lock() {
     const mult = game.overdrive > 0 ? 2 : 1;
     game.score += [0, 100, 300, 500, 800][rows.length] * game.level * mult;
     game.lines += rows.length;
-    const lvl = 1 + Math.floor(game.lines / 10);
+    const lvl = 1 + Math.floor(game.lines / LINES_PER_LEVEL);
     if (lvl !== game.level) { game.level = lvl; audio.bpm = Math.min(144, 116 + lvl * 2); say('LEVEL ' + lvl); }
     else if (rows.length === 4) say(mult > 1 ? 'FULL FLOOR ×2' : 'FULL FLOOR');
   } else spawn();
@@ -608,10 +622,14 @@ addEventListener('keyup', e => { const a = KEYS[e.code]; if (a) release(a); });
 addEventListener('blur', () => { for (const k in held) delete held[k]; if (game.state === 'play') togglePause(); });
 document.querySelectorAll('#touch button').forEach(b => {
   const a = b.dataset.a;
-  b.addEventListener('pointerdown', e => { e.preventDefault(); press(a); });
-  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, () => release(a));
+  b.addEventListener('pointerdown', e => {
+    e.preventDefault(); b.classList.add('down'); press(a);
+    if (navigator.vibrate) navigator.vibrate(a === 'drop' ? 18 : 8);
+  });
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, () => { b.classList.remove('down'); release(a); });
 });
 $('startBtn').addEventListener('click', start);
+$('holdBox').addEventListener('pointerdown', () => act('hold'));
 $('pauseBtn').addEventListener('click', e => { togglePause(); e.currentTarget.blur(); });
 $('muteBtn').addEventListener('click', e => { toggleMute(); e.currentTarget.blur(); });
 addEventListener('resize', layout);
@@ -641,7 +659,7 @@ function update(dt, now) {
     return;
   }
   const p = game.piece; if (!p) return;
-  const interval = Math.max(55, 800 * Math.pow(0.84, game.level - 1));
+  const interval = Math.max(55, 800 * Math.pow(0.88, game.level - 1));
   game.dropAcc += dt;
   while (game.dropAcc >= interval) {
     game.dropAcc -= interval;
