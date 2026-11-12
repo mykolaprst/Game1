@@ -1,0 +1,38 @@
+[
+  { "id": "newsreel_1914", "year": 1914, "image": "newsreel", "title": "War in Europe",
+    "text": "The papers talk of nothing else. A newsreel company offers good money for your cameras and crews to film the mobilisation.",
+    "options": [
+      { "label": "Rent out the crews", "detail": "Quick cash, but your own pictures look neglected.", "effects": { "cash": 3, "rep": -3 } },
+      { "label": "Keep making pictures", "detail": "Audiences want an escape. A small boost to your name.", "effects": { "rep": 2 } }
+    ] },
+  { "id": "talkies_1927", "year": 1927, "image": "talkies", "title": "The Pictures Start Talking",
+    "text": "A rival's picture with synchronized singing has crowds queuing round the block. Some call it a fad. Within three years, silent films may be unsellable.",
+    "options": [
+      { "label": "Wire the stages for sound now", "detail": "Pay a premium and get Synchronized Sound immediately.", "effects": { "cash": -11, "tech": "sync_sound" } },
+      { "label": "Wait and see", "detail": "Research it yourself when you are ready. Cheaper, slower.", "effects": {} }
+    ] },
+  { "id": "crash_1929", "year": 1929, "image": "crash", "title": "The Crash",
+    "text": "The stock market has collapsed. People still go to the pictures to forget, but there is less money in every pocket for the next few years.",
+    "options": [
+      { "label": "Cut everyone's pay", "detail": "Save cash now. Your reputation with talent suffers.", "effects": { "cash": 4, "rep": -6, "market": { "mult": 0.8, "years": 4, "label": "Depression" } } },
+      { "label": "Hold the line", "detail": "Keep the payroll whole and earn loyalty.", "effects": { "rep": 3, "market": { "mult": 0.8, "years": 4, "label": "Depression" } } }
+    ] },
+  { "id": "television_1950", "year": 1950, "image": "television", "title": "The Little Box",
+    "text": "Television sets are in millions of homes and ticket sales are sliding. Audiences will only leave the sofa for something they cannot get at home.",
+    "options": [
+      { "label": "Sell old films to television", "detail": "A welcome cheque from the networks.", "effects": { "cash": 6, "market": { "mult": 0.85, "years": 6, "label": "Television" } } },
+      { "label": "Refuse to feed the enemy", "detail": "Stay exclusive to theatres. Cinemas reward your loyalty.", "effects": { "rep": 4, "market": { "mult": 0.85, "years": 6, "label": "Television" } } }
+    ] },
+  { "id": "strike_1960", "year": 1960, "image": "strike", "title": "Strike!",
+    "text": "Writers and actors have walked out, demanding a share of what television pays for old films. The lot is silent.",
+    "options": [
+      { "label": "Settle generously", "detail": "It costs money, but the talent remembers.", "effects": { "cash": -5, "rep": 5 } },
+      { "label": "Wait them out", "detail": "Lose six months while the stages stand empty.", "effects": { "months": 6, "rep": -2 } }
+    ] },
+  { "id": "summer_1975", "year": 1975, "image": "summer", "title": "The Summer Everything Changed",
+    "text": "One picture opened everywhere at once and people queued for hours. The summer event film is born, and the market for spectacle has never been bigger.",
+    "options": [
+      { "label": "Chase the spectacle", "detail": "The market for films grows for the next decade.", "effects": { "market": { "mult": 1.2, "years": 10, "label": "Blockbuster fever" } } },
+      { "label": "Champion the auteurs", "detail": "Smaller growth, but critics love your stand.", "effects": { "rep": 6, "market": { "mult": 1.1, "years": 10, "label": "Blockbuster fever" } } }
+    ] }
+]

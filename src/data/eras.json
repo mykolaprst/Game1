@@ -1,0 +1,14 @@
+{
+  "startYear": 1900,
+  "endYear": 1985,
+  "unitDollars": 500,
+  "costAnchors": [[1900, 1], [1915, 25], [1927, 150], [1940, 300], [1960, 700], [1975, 2000], [1985, 5000]],
+  "eras": [
+    { "id": "silent", "name": "The Silent Era", "start": 1900, "end": 1926, "maxDeptLevel": 3,
+      "blurb": "Hand-cranked cameras, title cards and nickel theatres. Nobody is sure moving pictures will last." },
+    { "id": "sound", "name": "The Golden Age of Sound", "start": 1927, "end": 1959, "maxDeptLevel": 4,
+      "blurb": "Pictures learn to talk, then to sing, then to burst into colour. Studios become dream factories." },
+    { "id": "blockbuster", "name": "The Blockbuster Era", "start": 1960, "end": 1985, "maxDeptLevel": 5,
+      "blurb": "Television has changed everything. Young directors, location shooting and summer event films take over." }
+  ]
+}

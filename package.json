@@ -1,0 +1,39 @@
+{
+  "name": "film-industry-tycoon",
+  "version": "1.0.0",
+  "description": "A film studio tycoon game, 1900-1985",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "balance": "tsx scripts/balance.ts",
+    "assets": "node scripts/build-assets.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mykolaprst/Game1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mykolaprst/Game1/issues"
+  },
+  "homepage": "https://github.com/mykolaprst/Game1#readme",
+  "dependencies": {
+    "@fontsource/abril-fatface": "^5.3.0",
+    "preact": "^11.2.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "@types/node": "^26.6.6",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  },
+  "private": true,
+  "type": "module"
+}

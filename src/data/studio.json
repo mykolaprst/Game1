@@ -1,0 +1,213 @@
+{
+  "departments": [
+    {
+      "id": "writing",
+      "name": "Writing",
+      "sprite": "writing",
+      "desc": "Story editors and script doctors. Raises script quality."
+    },
+    {
+      "id": "production",
+      "name": "Production & Sets",
+      "sprite": "production",
+      "desc": "Stages, carpenters and costumes. Raises production value."
+    },
+    {
+      "id": "camera",
+      "name": "Camera & Lighting",
+      "sprite": "camera",
+      "desc": "Cinematographers and gaffers. Raises visual quality."
+    },
+    {
+      "id": "post",
+      "name": "Post-production",
+      "sprite": "post",
+      "desc": "Editors, sound and labs. Raises the final polish."
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "sprite": "marketing",
+      "desc": "Publicists and salesmen. Makes every campaign reach further."
+    }
+  ],
+  "deptUpgradeCost": [
+    0,
+    4,
+    12,
+    30,
+    70
+  ],
+  "deptUpkeepPerLevel": 0.06,
+  "tiers": [
+    {
+      "id": "shoestring",
+      "name": "Shoestring",
+      "cost": 1,
+      "value": 30,
+      "months": 3,
+      "reach": 0.7,
+      "desc": "Quick and cheap."
+    },
+    {
+      "id": "modest",
+      "name": "Modest",
+      "cost": 2.5,
+      "value": 48,
+      "months": 5,
+      "reach": 1,
+      "desc": "A solid programme picture."
+    },
+    {
+      "id": "lavish",
+      "name": "Lavish",
+      "cost": 6,
+      "value": 66,
+      "months": 8,
+      "reach": 1.35,
+      "desc": "Big sets, big hopes.",
+      "tech": "feature_reels"
+    },
+    {
+      "id": "epic",
+      "name": "Epic",
+      "cost": 14,
+      "value": 84,
+      "months": 12,
+      "reach": 1.8,
+      "desc": "A cast of thousands. Bet the studio.",
+      "tech": "feature_reels",
+      "dept": 3
+    }
+  ],
+  "audiences": [
+    {
+      "id": "family",
+      "name": "Family",
+      "size": {
+        "silent": 1,
+        "sound": 1.05,
+        "blockbuster": 1
+      }
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "size": {
+        "silent": 1.05,
+        "sound": 1.05,
+        "blockbuster": 1.05
+      }
+    },
+    {
+      "id": "adult",
+      "name": "Adult",
+      "size": {
+        "silent": 0.85,
+        "sound": 0.9,
+        "blockbuster": 1.1
+      }
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "none",
+      "name": "Word of Mouth",
+      "cost": 0,
+      "reach": 0.6,
+      "desc": "Open the doors and hope."
+    },
+    {
+      "id": "posters",
+      "name": "Posters & Handbills",
+      "cost": 0.3,
+      "reach": 0.85,
+      "desc": "Paste the town."
+    },
+    {
+      "id": "press",
+      "name": "Press Campaign",
+      "cost": 0.8,
+      "reach": 1,
+      "tech": "fan_magazines",
+      "desc": "Magazine spreads and star interviews."
+    },
+    {
+      "id": "radio",
+      "name": "Radio Spots",
+      "cost": 1.4,
+      "reach": 1.15,
+      "tech": "radio_ads",
+      "desc": "Jingles between the serials."
+    },
+    {
+      "id": "tv",
+      "name": "TV Spots",
+      "cost": 2.4,
+      "reach": 1.3,
+      "tech": "tv_spots",
+      "desc": "Thirty seconds in every home."
+    },
+    {
+      "id": "blitz",
+      "name": "Nationwide Blitz",
+      "cost": 4.5,
+      "reach": 1.55,
+      "tech": "wide_release",
+      "desc": "Everywhere, all at once."
+    }
+  ],
+  "balance": {
+    "startCashUnits": 6,
+    "startRep": 10,
+    "baseGross": 9,
+    "qualityWeights": {
+      "script": 0.24,
+      "direction": 0.2,
+      "acting": 0.18,
+      "visuals": 0.13,
+      "production": 0.13,
+      "post": 0.12
+    },
+    "appealPivot": 60,
+    "appealPower": 1.8,
+    "themeFit": {
+      "great": 1.05,
+      "ok": 1,
+      "poor": 0.92
+    },
+    "loveFit": 1.08,
+    "weakFit": 0.85,
+    "fatigue": [
+      1,
+      1,
+      0.85,
+      0.72
+    ],
+    "trendHot": 1.18,
+    "trendCold": 0.85,
+    "trendYears": 3,
+    "noise": 6,
+    "grossNoise": 0.12,
+    "feeBase": 0.12,
+    "feeSkill": 1.1,
+    "feeFame": 1.8,
+    "feeRole": {
+      "writer": 0.6,
+      "director": 1,
+      "actor": 1.2
+    },
+    "refuseGap": 35,
+    "techRampYears": 6,
+    "techNovelty": 4,
+    "bailoutUnits": 4,
+    "bailoutRep": 8,
+    "maxBailouts": 3,
+    "appealRepPivot": 0.17,
+    "repBar": 45,
+    "repBarSlope": 0.45,
+    "craftBase": 30,
+    "craftRange": 40,
+    "techScoreMax": 20
+  }
+}

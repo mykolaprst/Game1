@@ -1,0 +1,14 @@
+[
+  { "id": "frontier", "name": "The Frontier", "great": ["western", "adventure"], "poor": ["musical", "scifi", "crime"] },
+  { "id": "love_triangle", "name": "Love Triangle", "great": ["romance", "drama"], "poor": ["war", "scifi"] },
+  { "id": "big_city", "name": "Big City", "great": ["crime", "comedy", "drama"], "poor": ["western"] },
+  { "id": "haunted_house", "name": "Haunted House", "great": ["horror", "comedy"], "poor": ["war", "western"] },
+  { "id": "heist", "name": "The Heist", "great": ["crime", "adventure"], "poor": ["romance", "musical"] },
+  { "id": "battlefield", "name": "Battlefield", "great": ["war", "drama"], "poor": ["comedy", "musical"] },
+  { "id": "royal_court", "name": "Royal Court", "great": ["romance", "drama", "musical"], "poor": ["crime", "western"] },
+  { "id": "circus", "name": "The Circus", "great": ["comedy", "musical", "horror"], "poor": ["war"] },
+  { "id": "high_seas", "name": "High Seas", "great": ["adventure", "war"], "poor": ["crime"] },
+  { "id": "outer_space", "name": "Outer Space", "great": ["scifi", "adventure"], "poor": ["western", "romance"] },
+  { "id": "small_town", "name": "Small Town", "great": ["drama", "horror", "comedy"], "poor": ["adventure"] },
+  { "id": "rags_to_riches", "name": "Rags to Riches", "great": ["musical", "drama", "comedy"], "poor": ["horror", "war"] }
+]

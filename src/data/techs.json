@@ -1,0 +1,19 @@
+[
+  { "id": "moving_camera", "name": "Moving Camera", "category": "camera", "year": 1903, "cost": 2, "months": 6, "desc": "Pans, tilts and tracking shots. The picture stops looking like a filmed stage play." },
+  { "id": "continuity_editing", "name": "Continuity Editing", "category": "post", "year": 1908, "cost": 2.5, "months": 6, "desc": "Cross-cutting and close-ups that let a story flow from shot to shot." },
+  { "id": "feature_reels", "name": "Feature-Length Reels", "category": "production", "year": 1912, "cost": 4, "months": 9, "desc": "Multi-reel pictures an hour long or more. Unlocks Lavish and Epic budgets.", "unlocksTier": true },
+  { "id": "fan_magazines", "name": "Fan Magazines", "category": "marketing", "year": 1914, "cost": 3, "months": 6, "desc": "Feed the public's hunger for stars. Unlocks the Press Campaign." },
+  { "id": "studio_lighting", "name": "Studio Lighting", "category": "camera", "year": 1915, "cost": 4, "months": 8, "desc": "Electric arc lamps replace daylight. Shoot moods, shadows and night scenes." },
+  { "id": "sync_sound", "name": "Synchronized Sound", "category": "post", "year": 1927, "cost": 8, "months": 10, "desc": "Talking pictures. Unlocks Musicals. Within a few years, silent films stop selling.", "essential": { "after": 1930, "mult": 0.4, "label": "No sound: audiences stayed away" } },
+  { "id": "radio_ads", "name": "Radio Advertising", "category": "marketing", "year": 1930, "cost": 5, "months": 6, "desc": "Reach every living room in the country. Unlocks Radio Spots." },
+  { "id": "color", "name": "Three-Strip Colour", "category": "camera", "year": 1935, "cost": 10, "months": 12, "desc": "Glorious full colour. Posters and pictures come alive.", "essential": { "after": 1966, "mult": 0.75, "label": "Black-and-white looks dated" } },
+  { "id": "deep_focus", "name": "Deep-Focus Lenses", "category": "camera", "year": 1941, "cost": 6, "months": 8, "desc": "Everything sharp from foreground to horizon. Bolder compositions." },
+  { "id": "magnetic_sound", "name": "Magnetic Sound Recording", "category": "post", "year": 1949, "cost": 6, "months": 8, "desc": "Cleaner dialogue, richer scores and easier mixing." },
+  { "id": "widescreen", "name": "Widescreen", "category": "production", "year": 1953, "cost": 9, "months": 10, "desc": "A picture too big for television. Spectacle is back." },
+  { "id": "tv_spots", "name": "Television Spots", "category": "marketing", "year": 1955, "cost": 8, "months": 8, "desc": "If you can't beat the little box, advertise on it. Unlocks TV Spots." },
+  { "id": "location_rigs", "name": "Lightweight Location Cameras", "category": "camera", "year": 1961, "cost": 8, "months": 8, "desc": "Leave the soundstage and shoot in real streets." },
+  { "id": "effects_shop", "name": "Special Effects Workshop", "category": "production", "year": 1968, "cost": 12, "months": 12, "desc": "Miniatures, matte paintings and creatures built in-house." },
+  { "id": "surround", "name": "Stereo Surround Sound", "category": "post", "year": 1975, "cost": 10, "months": 10, "desc": "Sound that moves around the theatre." },
+  { "id": "wide_release", "name": "Saturation Release", "category": "marketing", "year": 1975, "cost": 12, "months": 8, "desc": "Open everywhere on the same weekend. Unlocks the Nationwide Blitz." },
+  { "id": "steadicam", "name": "Stabilized Camera Rig", "category": "camera", "year": 1976, "cost": 9, "months": 8, "desc": "Smooth handheld shots that glide through any space." }
+]

@@ -1,0 +1,12 @@
+[
+  { "id": "comedy", "name": "Comedy", "year": 1900, "taste": { "silent": 1.15, "sound": 1.0, "blockbuster": 0.95 }, "audience": { "family": 1.1, "general": 1.0, "adult": 0.9 } },
+  { "id": "drama", "name": "Drama", "year": 1900, "taste": { "silent": 1.0, "sound": 1.1, "blockbuster": 1.0 }, "audience": { "family": 0.9, "general": 1.0, "adult": 1.1 } },
+  { "id": "western", "name": "Western", "year": 1900, "taste": { "silent": 1.1, "sound": 1.1, "blockbuster": 0.8 }, "audience": { "family": 1.05, "general": 1.0, "adult": 0.95 } },
+  { "id": "romance", "name": "Romance", "year": 1900, "taste": { "silent": 1.0, "sound": 1.1, "blockbuster": 0.9 }, "audience": { "family": 0.95, "general": 1.0, "adult": 1.0 } },
+  { "id": "adventure", "name": "Adventure", "year": 1900, "taste": { "silent": 1.05, "sound": 1.0, "blockbuster": 1.15 }, "audience": { "family": 1.1, "general": 1.0, "adult": 0.9 } },
+  { "id": "war", "name": "War", "year": 1915, "taste": { "silent": 1.0, "sound": 1.05, "blockbuster": 0.95 }, "audience": { "family": 0.85, "general": 1.0, "adult": 1.1 } },
+  { "id": "horror", "name": "Horror", "year": 1919, "taste": { "silent": 0.9, "sound": 0.95, "blockbuster": 1.1 }, "audience": { "family": 0.75, "general": 1.0, "adult": 1.15 } },
+  { "id": "musical", "name": "Musical", "year": 1927, "tech": "sync_sound", "taste": { "silent": 1.0, "sound": 1.2, "blockbuster": 0.8 }, "audience": { "family": 1.1, "general": 1.0, "adult": 0.85 } },
+  { "id": "crime", "name": "Crime", "year": 1930, "taste": { "silent": 1.0, "sound": 1.1, "blockbuster": 1.1 }, "audience": { "family": 0.8, "general": 1.0, "adult": 1.15 } },
+  { "id": "scifi", "name": "Sci-Fi", "year": 1950, "taste": { "silent": 1.0, "sound": 0.9, "blockbuster": 1.25 }, "audience": { "family": 1.05, "general": 1.0, "adult": 0.95 } }
+]
