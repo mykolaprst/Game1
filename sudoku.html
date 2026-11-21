@@ -126,6 +126,8 @@
     padding: 10px 22px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
     border-color: var(--pink); color: #fff; background: linear-gradient(135deg, rgba(255,47,185,.5), rgba(39,232,255,.3));
   }
+  .card #ovCancel { background: transparent; border-color: var(--line); color: var(--dim); }
+  [hidden] { display: none !important; }
   .help { font-size: 11px; color: var(--dim); letter-spacing: 0.06em; text-align: center; opacity: 0.75; }
   @media (hover: none) { .help { display: none; } }
 </style>
@@ -162,7 +164,10 @@
   <div class="card">
     <h2 id="ovTitle">Solved!</h2>
     <p id="ovText"></p>
-    <button id="ovBtn">New Game</button>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button id="ovCancel" hidden>Keep Playing</button>
+      <button id="ovBtn">New Game</button>
+    </div>
   </div>
 </div>
 
@@ -378,7 +383,7 @@
   }
   function bestTimes() { try { return JSON.parse(localStorage.getItem(SAVE_KEY + '-best')) || {}; } catch (e) { return {}; } }
   const cap = s => s[0].toUpperCase() + s.slice(1);
-  function hideOverlay() { $('overlay').classList.remove('show'); }
+  function hideOverlay() { $('overlay').classList.remove('show'); $('ovCancel').hidden = true; }
 
   // ---------- Rendering ----------
   function render() {
@@ -416,11 +421,17 @@
   $('notesBtn').onclick = () => { notesMode = !notesMode; render(); };
   $('hintBtn').onclick = hint;
   $('newBtn').onclick = () => {
-    if (!S.over && S.values.some((v, i) => v && !S.puzzle[i]) && !confirm('Start a new game? Current progress will be lost.')) return;
+    if (!S.over && S.values.some((v, i) => v && !S.puzzle[i])) {
+      $('ovTitle').textContent = 'New Game?';
+      $('ovText').textContent = 'Your current puzzle progress will be lost.';
+      $('ovCancel').hidden = false;
+      return $('overlay').classList.add('show');
+    }
     newGame();
   };
   $('difficulty').onchange = () => newGame();
   $('ovBtn').onclick = () => newGame();
+  $('ovCancel').onclick = hideOverlay;
 
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'SELECT') return;
