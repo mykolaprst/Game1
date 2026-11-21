@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Neon Sudoku</title>
+<style>
+  :root {
+    --gold: #ffc93c;
+    --pink: #ff2fb9;
+    --cyan: #27e8ff;
+    --ink: #05030c;
+    --panel: rgba(14, 9, 32, 0.86);
+    --line: rgba(255, 255, 255, 0.12);
+    --thick: rgba(255, 255, 255, 0.42);
+    --text: #e9e6ff;
+    --dim: #8f88b8;
+    --given: #ffffff;
+    --user: #27e8ff;
+    --bad: #ff4d6d;
+    --size: min(92vw, 62vh, 520px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; min-height: 100%;
+    background: radial-gradient(ellipse at 20% 0%, #2a0b3d 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 100%, #062a3a 0%, transparent 55%), var(--ink);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    user-select: none; -webkit-user-select: none;
+  }
+  #app {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    gap: 12px; padding: max(14px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  }
+  h1 {
+    margin: 4px 0 0; font-weight: 900; font-style: italic; letter-spacing: 0.22em;
+    font-size: clamp(20px, 4vh, 32px); text-transform: uppercase;
+    background: linear-gradient(180deg, #fff 0%, #cfd6e6 38%, #5b6377 50%, #f4f6ff 56%, #9aa3b8 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255, 47, 185, 0.65));
+  }
+  .bar {
+    width: var(--size); display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+  }
+  .bar b { color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+  select, button {
+    font: inherit; color: var(--text); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+  }
+  select { padding: 6px 8px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 12px; }
+  #boardWrap {
+    border-radius: 10px; padding: 3px;
+    background: linear-gradient(135deg, var(--pink), var(--gold), var(--cyan));
+    box-shadow: 0 0 28px rgba(255, 47, 185, 0.4), 0 0 60px rgba(39, 232, 255, 0.16);
+  }
+  #board {
+    width: var(--size); height: var(--size);
+    display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr);
+    background: #0b0718; border-radius: 8px; overflow: hidden;
+  }
+  .cell {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    font-size: calc(var(--size) / 9 * 0.56); font-weight: 600; color: var(--user);
+    cursor: pointer; transition: background 0.12s;
+    font-variant-numeric: tabular-nums;
+  }
+  .cell:nth-child(9n) { border-right: none; }
+  .cell.c2, .cell.c5 { border-right: 2px solid var(--thick); }
+  .cell.r2, .cell.r5 { border-bottom: 2px solid var(--thick); }
+  .cell.r8 { border-bottom: none; }
+  .cell.given { color: var(--given); font-weight: 800; }
+  .cell.peer { background: rgba(255, 255, 255, 0.05); }
+  .cell.same { background: rgba(255, 201, 60, 0.16); }
+  .cell.sel { background: rgba(255, 47, 185, 0.32); box-shadow: inset 0 0 0 2px var(--pink); }
+  .cell.err { color: var(--bad); text-shadow: 0 0 8px rgba(255, 77, 109, 0.7); }
+  .cell.hinted { color: var(--gold); }
+  .cell.flash { animation: flash 0.6s ease; }
+  @keyframes flash { 0% { background: rgba(39, 232, 255, 0.5); } 100% { background: transparent; } }
+  .notes {
+    position: absolute; inset: 2px; display: grid;
+    grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+    font-size: calc(var(--size) / 9 * 0.24); font-weight: 600; color: var(--dim);
+  }
+  .notes span { display: flex; align-items: center; justify-content: center; }
+  .notes span.hl { color: var(--gold); }
+
+  .tools { width: var(--size); display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .tools button {
+    padding: 8px 0 6px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+  }
+  .tools button svg { width: 22px; height: 22px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tools button.on { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 12px rgba(255, 47, 185, 0.4); }
+  .tools button.on svg { stroke: var(--pink); }
+  .tools button:active, .pad button:active { transform: scale(0.95); }
+  .tools .badge { color: var(--gold); }
+
+  .pad { width: var(--size); display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
+  .pad button {
+    aspect-ratio: 0.78; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: calc(var(--size) / 9 * 0.5); font-weight: 700; color: var(--cyan); padding: 0;
+  }
+  .pad button small { font-size: 10px; color: var(--dim); font-weight: 500; margin-top: 2px; }
+  .pad button.done { opacity: 0.25; pointer-events: none; }
+
+  #overlay {
+    position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    background: rgba(5, 3, 12, 0.78); backdrop-filter: blur(6px); z-index: 10; padding: 16px;
+  }
+  #overlay.show { display: flex; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 26px 28px; text-align: center; max-width: 340px; width: 100%;
+    box-shadow: 0 0 40px rgba(255, 47, 185, 0.35);
+  }
+  .card h2 {
+    margin: 0 0 10px; font-style: italic; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold); text-shadow: 0 0 14px rgba(255, 201, 60, 0.7);
+  }
+  .card p { margin: 0 0 18px; color: var(--dim); line-height: 1.6; letter-spacing: 0.04em; }
+  .card button {
+    padding: 10px 22px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    border-color: var(--pink); color: #fff; background: linear-gradient(135deg, rgba(255,47,185,.5), rgba(39,232,255,.3));
+  }
+  .help { font-size: 11px; color: var(--dim); letter-spacing: 0.06em; text-align: center; opacity: 0.75; }
+  @media (hover: none) { .help { display: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>Neon Sudoku</h1>
+  <div class="bar">
+    <select id="difficulty" aria-label="Difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium" selected>Medium</option>
+      <option value="hard">Hard</option>
+      <option value="expert">Expert</option>
+    </select>
+    <span>Mistakes <b id="mistakes">0/3</b></span>
+    <span>Time <b id="timer">00:00</b></span>
+  </div>
+
+  <div id="boardWrap"><div id="board"></div></div>
+
+  <div class="tools">
+    <button id="undoBtn" title="Undo (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>Undo</button>
+    <button id="eraseBtn" title="Erase (Backspace)"><svg viewBox="0 0 24 24"><path d="M20 20H8l-5-5 10-10 8 8-7 7"/><path d="m6 12 7 7"/></svg>Erase</button>
+    <button id="notesBtn" title="Notes (N)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Notes</button>
+    <button id="hintBtn" title="Hint (H)"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2Z"/></svg><span>Hint <span class="badge" id="hintsLeft">3</span></span></button>
+    <button id="newBtn" title="New game"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>New</button>
+  </div>
+
+  <div class="pad" id="pad"></div>
+  <div class="help">Arrows / click to move · 1–9 to fill · N notes · H hint · Backspace erase · Ctrl+Z undo</div>
+</div>
+
+<div id="overlay">
+  <div class="card">
+    <h2 id="ovTitle">Solved!</h2>
+    <p id="ovText"></p>
+    <button id="ovBtn">New Game</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- Sudoku engine ----------
+  const ROW = i => (i / 9) | 0, COL = i => i % 9, BOX = i => ((ROW(i) / 3) | 0) * 3 + ((COL(i) / 3) | 0);
+  const PEERS = Array.from({ length: 81 }, (_, i) => {
+    const s = new Set();
+    for (let j = 0; j < 81; j++) if (j !== i && (ROW(j) === ROW(i) || COL(j) === COL(i) || BOX(j) === BOX(i))) s.add(j);
+    return [...s];
+  });
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  // Count solutions (up to limit) using bitmask backtracking with MRV.
+  function countSolutions(grid, limit = 2, out = null) {
+    const g = grid.slice();
+    const rows = new Array(9).fill(0), cols = new Array(9).fill(0), boxes = new Array(9).fill(0);
+    for (let i = 0; i < 81; i++) if (g[i]) {
+      const b = 1 << g[i];
+      if ((rows[ROW(i)] | cols[COL(i)] | boxes[BOX(i)]) & b) return 0;
+      rows[ROW(i)] |= b; cols[COL(i)] |= b; boxes[BOX(i)] |= b;
+    }
+    let count = 0;
+    const solve = () => {
+      let best = -1, bestMask = 0, bestCount = 10;
+      for (let i = 0; i < 81; i++) if (!g[i]) {
+        const mask = ~(rows[ROW(i)] | cols[COL(i)] | boxes[BOX(i)]) & 0x3fe;
+        let c = 0; for (let m = mask; m; m &= m - 1) c++;
+        if (c < bestCount) { best = i; bestMask = mask; bestCount = c; if (c <= 1) break; }
+      }
+      if (best === -1) { count++; if (out && !out.length) out.push(...g); return count >= limit; }
+      if (!bestCount) return false;
+      const r = ROW(best), c = COL(best), bx = BOX(best);
+      for (let d = 1; d <= 9; d++) {
+        const b = 1 << d;
+        if (!(bestMask & b)) continue;
+        g[best] = d; rows[r] |= b; cols[c] |= b; boxes[bx] |= b;
+        if (solve()) return true;
+        g[best] = 0; rows[r] &= ~b; cols[c] &= ~b; boxes[bx] &= ~b;
+      }
+      return false;
+    };
+    solve();
+    return count;
+  }
+
+  function fullGrid() {
+    const g = new Array(81).fill(0);
+    const fill = i => {
+      if (i === 81) return true;
+      for (const d of shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9])) {
+        if (PEERS[i].every(p => g[p] !== d)) { g[i] = d; if (fill(i + 1)) return true; }
+      }
+      g[i] = 0; return false;
+    };
+    fill(0);
+    return g;
+  }
+
+  const TARGET_CLUES = { easy: 40, medium: 32, hard: 27, expert: 23 };
+  function generate(diff) {
+    const solution = fullGrid();
+    const puzzle = solution.slice();
+    let clues = 81;
+    const target = TARGET_CLUES[diff];
+    // Remove in symmetric pairs for a classic look, keeping a unique solution.
+    for (const i of shuffle([...Array(41).keys()])) {
+      if (clues <= target) break;
+      const j = 80 - i;
+      const a = puzzle[i], b = puzzle[j];
+      puzzle[i] = 0; puzzle[j] = 0;
+      if (countSolutions(puzzle, 2) !== 1) { puzzle[i] = a; puzzle[j] = b; }
+      else clues -= (i === j ? 1 : 2);
+    }
+    return { puzzle, solution };
+  }
+
+  // ---------- Game state ----------
+  const $ = id => document.getElementById(id);
+  const boardEl = $('board'), padEl = $('pad');
+  const MAX_MISTAKES = 3, MAX_HINTS = 3, SAVE_KEY = 'neon-sudoku-v1';
+  let S = null;          // state
+  let sel = -1, notesMode = false, timerId = null;
+  const cells = [], padBtns = [];
+
+  for (let i = 0; i < 81; i++) {
+    const el = document.createElement('div');
+    el.className = `cell r${ROW(i)} c${COL(i)}`;
+    el.addEventListener('pointerdown', () => select(i));
+    boardEl.appendChild(el); cells.push(el);
+  }
+  for (let d = 1; d <= 9; d++) {
+    const b = document.createElement('button');
+    b.innerHTML = `${d}<small></small>`;
+    b.addEventListener('click', () => input(d));
+    padEl.appendChild(b); padBtns.push(b);
+  }
+
+  function newGame(diff = $('difficulty').value) {
+    const { puzzle, solution } = generate(diff);
+    S = {
+      diff, puzzle, solution,
+      values: puzzle.slice(),
+      notes: Array.from({ length: 81 }, () => []),
+      hinted: [],
+      mistakes: 0, hintsLeft: MAX_HINTS, time: 0, over: false, history: []
+    };
+    sel = puzzle.findIndex(v => !v);
+    $('difficulty').value = diff;
+    hideOverlay(); startTimer(); render(); save();
+  }
+
+  function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.puzzle && !s.over) return s; } catch (e) {}
+    return null;
+  }
+
+  function startTimer() {
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+      if (!S.over && !document.hidden) { S.time++; $('timer').textContent = fmt(S.time); if (S.time % 5 === 0) save(); }
+    }, 1000);
+  }
+  const fmt = t => `${String((t / 60) | 0).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+
+  function select(i) { sel = i; render(); }
+
+  function snapshot(i) { S.history.push({ i, v: S.values[i], n: S.notes[i].slice() }); if (S.history.length > 200) S.history.shift(); }
+
+  function input(d) {
+    if (S.over || sel < 0 || S.puzzle[sel] || S.hinted.includes(sel)) return;
+    const i = sel;
+    if (notesMode) {
+      if (S.values[i]) return;
+      snapshot(i);
+      const n = S.notes[i], k = n.indexOf(d);
+      k >= 0 ? n.splice(k, 1) : n.push(d);
+    } else {
+      if (S.values[i] === d) return;
+      snapshot(i);
+      S.values[i] = d; S.notes[i] = [];
+      if (d !== S.solution[i]) {
+        S.mistakes++;
+        if (S.mistakes >= MAX_MISTAKES) return finish(false);
+      } else {
+        // Clear this digit from peer notes.
+        for (const p of PEERS[i]) { const k = S.notes[p].indexOf(d); if (k >= 0) S.notes[p].splice(k, 1); }
+        flashCompleted(i);
+      }
+    }
+    render(); save(); checkWin();
+  }
+
+  function erase() {
+    if (S.over || sel < 0 || S.puzzle[sel] || S.hinted.includes(sel)) return;
+    if (!S.values[sel] && !S.notes[sel].length) return;
+    snapshot(sel); S.values[sel] = 0; S.notes[sel] = [];
+    render(); save();
+  }
+
+  function undo() {
+    if (S.over) return;
+    const h = S.history.pop(); if (!h) return;
+    S.values[h.i] = h.v; S.notes[h.i] = h.n; sel = h.i;
+    render(); save();
+  }
+
+  function hint() {
+    if (S.over || S.hintsLeft <= 0) return;
+    let i = sel;
+    if (i < 0 || S.values[i] === S.solution[i]) {
+      const open = [...Array(81).keys()].filter(k => S.values[k] !== S.solution[k]);
+      if (!open.length) return;
+      i = open[(Math.random() * open.length) | 0];
+    }
+    S.values[i] = S.solution[i]; S.notes[i] = []; S.hinted.push(i); S.hintsLeft--;
+    for (const p of PEERS[i]) { const k = S.notes[p].indexOf(S.values[i]); if (k >= 0) S.notes[p].splice(k, 1); }
+    S.history = S.history.filter(h => h.i !== i);
+    sel = i; flashCompleted(i); render(); save(); checkWin();
+  }
+
+  function flashCompleted(i) {
+    const groups = [
+      [...Array(9).keys()].map(k => ROW(i) * 9 + k),
+      [...Array(9).keys()].map(k => k * 9 + COL(i)),
+      [...Array(81).keys()].filter(k => BOX(k) === BOX(i))
+    ];
+    for (const g of groups) if (g.every(k => S.values[k] === S.solution[k])) {
+      g.forEach((k, n) => setTimeout(() => {
+        cells[k].classList.remove('flash'); void cells[k].offsetWidth; cells[k].classList.add('flash');
+      }, n * 30));
+    }
+  }
+
+  function checkWin() { if (S.values.every((v, i) => v === S.solution[i])) finish(true); }
+
+  function finish(won) {
+    S.over = true; clearInterval(timerId); render(); save();
+    const best = bestTimes();
+    let extra = '';
+    if (won) {
+      const prev = best[S.diff];
+      if (!prev || S.time < prev) { best[S.diff] = S.time; try { localStorage.setItem(SAVE_KEY + '-best', JSON.stringify(best)); } catch (e) {} extra = '<br>New best time!'; }
+      else extra = `<br>Best: ${fmt(prev)}`;
+    }
+    $('ovTitle').textContent = won ? 'Solved!' : 'Game Over';
+    $('ovText').innerHTML = won
+      ? `${cap(S.diff)} cleared in <b style="color:var(--cyan)">${fmt(S.time)}</b> with ${S.mistakes} mistake${S.mistakes === 1 ? '' : 's'}.${extra}`
+      : `Three mistakes — the grid wins this round.`;
+    setTimeout(() => $('overlay').classList.add('show'), won ? 700 : 250);
+  }
+  function bestTimes() { try { return JSON.parse(localStorage.getItem(SAVE_KEY + '-best')) || {}; } catch (e) { return {}; } }
+  const cap = s => s[0].toUpperCase() + s.slice(1);
+  function hideOverlay() { $('overlay').classList.remove('show'); }
+
+  // ---------- Rendering ----------
+  function render() {
+    const selVal = sel >= 0 ? S.values[sel] : 0;
+    for (let i = 0; i < 81; i++) {
+      const el = cells[i], v = S.values[i];
+      const given = !!S.puzzle[i];
+      el.classList.toggle('given', given);
+      el.classList.toggle('hinted', S.hinted.includes(i));
+      el.classList.toggle('err', !!v && !given && v !== S.solution[i]);
+      el.classList.toggle('sel', i === sel);
+      el.classList.toggle('peer', sel >= 0 && i !== sel && PEERS[sel].includes(i));
+      el.classList.toggle('same', !!selVal && i !== sel && v === selVal);
+      if (v) el.textContent = v;
+      else if (S.notes[i].length) {
+        el.innerHTML = '<div class="notes">' +
+          [1,2,3,4,5,6,7,8,9].map(d => `<span class="${d === selVal ? 'hl' : ''}">${S.notes[i].includes(d) ? d : ''}</span>`).join('') +
+          '</div>';
+      } else el.textContent = '';
+    }
+    for (let d = 1; d <= 9; d++) {
+      const placed = S.values.filter((v, i) => v === d && v === S.solution[i]).length;
+      padBtns[d - 1].classList.toggle('done', placed >= 9);
+      padBtns[d - 1].querySelector('small').textContent = 9 - placed;
+    }
+    $('mistakes').textContent = `${S.mistakes}/${MAX_MISTAKES}`;
+    $('timer').textContent = fmt(S.time);
+    $('hintsLeft').textContent = S.hintsLeft;
+    $('notesBtn').classList.toggle('on', notesMode);
+  }
+
+  // ---------- Controls ----------
+  $('undoBtn').onclick = undo;
+  $('eraseBtn').onclick = erase;
+  $('notesBtn').onclick = () => { notesMode = !notesMode; render(); };
+  $('hintBtn').onclick = hint;
+  $('newBtn').onclick = () => {
+    if (!S.over && S.values.some((v, i) => v && !S.puzzle[i]) && !confirm('Start a new game? Current progress will be lost.')) return;
+    newGame();
+  };
+  $('difficulty').onchange = () => newGame();
+  $('ovBtn').onclick = () => newGame();
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'SELECT') return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); return undo(); }
+    if (/^[1-9]$/.test(e.key)) return input(+e.key);
+    const moves = { ArrowUp: -9, ArrowDown: 9, ArrowLeft: -1, ArrowRight: 1 };
+    if (e.key in moves) {
+      e.preventDefault();
+      if (sel < 0) sel = 0;
+      const r = ROW(sel), c = COL(sel);
+      if (e.key === 'ArrowUp') sel = ((r + 8) % 9) * 9 + c;
+      if (e.key === 'ArrowDown') sel = ((r + 1) % 9) * 9 + c;
+      if (e.key === 'ArrowLeft') sel = r * 9 + (c + 8) % 9;
+      if (e.key === 'ArrowRight') sel = r * 9 + (c + 1) % 9;
+      return render();
+    }
+    if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') return erase();
+    if (e.key.toLowerCase() === 'n') { notesMode = !notesMode; return render(); }
+    if (e.key.toLowerCase() === 'h') return hint();
+  });
+
+  // ---------- Boot ----------
+  const saved = load();
+  if (saved) {
+    S = saved; S.history = S.history || [];
+    sel = S.puzzle.findIndex((v, i) => !v && !S.values[i]);
+    $('difficulty').value = S.diff; startTimer(); render();
+  } else newGame('medium');
+})();
+</script>
+</body>
+</html>
